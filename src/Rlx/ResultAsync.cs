@@ -25,6 +25,18 @@ namespace Rlx
         public bool IsOk { get; }
         public bool IsError => !IsOk;
 
+        public OptionAsync<TValue> Ok()
+        {
+            if (IsOk) return Functions.Some(_value);
+            return Functions.NoneAsync<TValue>();
+        }
+
+        public OptionAsync<TError> Error()
+        {
+            if (IsOk) return Functions.NoneAsync<TError>();
+            return Functions.Some(_error);
+        }
+
         public Task<Result<TValue, TError>> ToSync()
         {
             if (IsOk) return _value.Select(x => new Result<TValue, TError>(x));
