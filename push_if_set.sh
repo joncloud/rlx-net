@@ -12,6 +12,6 @@ else
     exit 2
   else
     echo "Uploading NuPkg"
-    dotnet nuget push $NUPKG_PATH -k $NUGET_API_KEY --verbosity detailed
+    dotnet nuget push $NUPKG_PATH -k $NUGET_API_KEY -s https://nuget.org
   fi
 fi
