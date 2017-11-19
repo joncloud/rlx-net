@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z $NUGET_API_KEY ]; then
   echo "NuGet API Key not set"
@@ -12,6 +12,6 @@ else
     exit 2
   else
     echo "Uploading NuPkg"
-    dotnet nuget push $NUPKG_PATH -k $NUGET_API_KEY
+    dotnet nuget push $NUPKG_PATH -k $NUGET_API_KEY --verbosity detailed
   fi
 fi
