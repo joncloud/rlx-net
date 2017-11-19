@@ -59,10 +59,10 @@ namespace Rlx
             return new OptionAsync<TResult>();
         }
 
-        public OptionAsync<TResult> MapOrElse<TResult>(Func<Task<TResult>> def, Func<T, Task<TResult>> fn)
+        public Task<TResult> MapOrElse<TResult>(Func<Task<TResult>> def, Func<T, Task<TResult>> fn)
         {
-            if (IsSome) return new OptionAsync<TResult>(_task.Select(fn));
-            return new OptionAsync<TResult>(def());
+            if (IsSome) return _task.Select(fn);
+            return def();
         }
 
         public OptionAsync<TResult> And<TResult>(OptionAsync<TResult> optionB)
