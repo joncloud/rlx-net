@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using static Rlx.Functions;
@@ -24,15 +25,15 @@ namespace Rlx.Tests
         [Fact]
         public void OkTests()
         {
-            Assert.Equal(Ok<int, string>(2).Ok(), Some(2));
-            Assert.Equal(Error<int, string>("Nothing here").Ok(), None<int>());
+            Assert.Equal(Some(2), Ok<int, string>(2).Ok());
+            Assert.Equal(None<int>(), Error<int, string>("Nothing here").Ok());
         }
 
         [Fact]
         public void ErrorTests()
         {
-            Assert.Equal(Ok<int, string>(2).Error(), None<string>());
-            Assert.Equal(Error<int, string>("Nothing here").Error(), Some("Nothing here"));
+            Assert.Equal(None<string>(), Ok<int, string>(2).Error());
+            Assert.Equal(Some("Nothing here"), Error<int, string>("Nothing here").Error());
         }
 
         [Fact]
@@ -50,12 +51,8 @@ namespace Rlx.Tests
                 Ok<int, string>(6),
                 Ok<int, string>(8)
             };
-            int index = 0;
             var nums = line.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var num in nums)
-            {
-                Assert.Equal(Parse(num).Map(i => i * 2), values[index++]);
-            }
+            Assert.Equal(values, nums.Select(num => Parse(num).Map(i => i * 2)));
         }
 
         [Fact]
@@ -73,12 +70,9 @@ namespace Rlx.Tests
                 Ok<int, string>(6),
                 Ok<int, string>(8)
             };
-            int index = 0;
             var nums = line.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var num in nums)
-            {
-                Assert.Equal(await Parse(num).Map(i => Task.FromResult(i * 2)).ToSync(), values[index++]);
-            }
+            var tasks = nums.Select(num => Parse(num).Map(i => Task.FromResult(i * 2)).ToSync());
+            Assert.Equal(values, await Task.WhenAll(tasks));
         }
 
         [Fact]
@@ -86,8 +80,8 @@ namespace Rlx.Tests
         {
             string Stringify(int x) => $"error code: {x}";
 
-            Assert.Equal(Ok<int, int>(2).MapError(Stringify), Ok<int, string>(2));
-            Assert.Equal(Error<int, int>(13).MapError(Stringify), Error<int, string>("error code: 13"));
+            Assert.Equal(Ok<int, string>(2), Ok<int, int>(2).MapError(Stringify));
+            Assert.Equal(Error<int, string>("error code: 13"), Error<int, int>(13).MapError(Stringify));
         }
 
         [Fact]
@@ -95,24 +89,24 @@ namespace Rlx.Tests
         {
             Task<string> Stringify(int x) => Task.FromResult($"error code: {x}");
 
-            Assert.Equal(await Ok<int, int>(2).MapError(Stringify).ToSync(), Ok<int, string>(2));
-            Assert.Equal(await Error<int, int>(13).MapError(Stringify).ToSync(), Error<int, string>("error code: 13"));
+            Assert.Equal(Ok<int, string>(2), await Ok<int, int>(2).MapError(Stringify).ToSync());
+            Assert.Equal(Error<int, string>("error code: 13"), await Error<int, int>(13).MapError(Stringify).ToSync());
         }
 
         [Fact]
         public void GetEnumeratorTests()
         {
-            Assert.Equal(Ok<int, string>(7), new[] { 7 });
+            Assert.Equal(new[] { 7 }, Ok<int, string>(7));
             Assert.Empty(Error<int, string>("nothing!"));
         }
 
         [Fact]
         public void AndTests()
         {
-            Assert.Equal(Ok<int, string>(2).And(Error<string, string>("late error")), Error<string, string>("late error"));
-            Assert.Equal(Error<int, string>("early error").And(Ok<string, string>("foo")), Error<string, string>("early error"));
-            Assert.Equal(Error<int, string>("not a 2").And(Error<string, string>("late error")), Error<string, string>("not a 2"));
-            Assert.Equal(Ok<int, string>(2).And(Ok<string, string>("different result type")), Ok<string, string>("different result type"));
+            Assert.Equal(Error<string, string>("late error"), Ok<int, string>(2).And(Error<string, string>("late error")));
+            Assert.Equal(Error<string, string>("early error"), Error<int, string>("early error").And(Ok<string, string>("foo")));
+            Assert.Equal(Error<string, string>("not a 2"), Error<int, string>("not a 2").And(Error<string, string>("late error")));
+            Assert.Equal(Ok<string, string>("different result type"), Ok<int, string>(2).And(Ok<string, string>("different result type")));
         }
 
         [Fact]
@@ -121,19 +115,19 @@ namespace Rlx.Tests
             Result<int, int> Square(int x) => Ok<int, int>(x * x);
             Result<int, int> Error(int x) => Error<int, int>(x);
 
-            Assert.Equal(Ok<int, int>(2).AndThen(Square).AndThen(Square), Ok<int, int>(16));
-            Assert.Equal(Ok<int, int>(2).AndThen(Square).AndThen(Error), Error<int, int>(4));
-            Assert.Equal(Ok<int, int>(2).AndThen(Error).AndThen(Square), Error<int, int>(2));
-            Assert.Equal(Error<int, int>(3).AndThen(Square).AndThen(Square), Error<int, int>(3));
+            Assert.Equal(Ok<int, int>(16), Ok<int, int>(2).AndThen(Square).AndThen(Square));
+            Assert.Equal(Error<int, int>(4), Ok<int, int>(2).AndThen(Square).AndThen(Error));
+            Assert.Equal(Error<int, int>(2), Ok<int, int>(2).AndThen(Error).AndThen(Square));
+            Assert.Equal(Error<int, int>(3), Error<int, int>(3).AndThen(Square).AndThen(Square));
         }
 
         [Fact]
         public void OrTests()
         {
-            Assert.Equal(Ok<int, string>(2).Or(Error<int, string>("late error")), Ok<int, string>(2));
-            Assert.Equal(Error<int, string>("early error").Or(Ok<int, string>(2)), Ok<int, string>(2));
-            Assert.Equal(Error<int, string>("not a 2").Or(Error<int, string>("late error")), Error<int, string>("late error"));
-            Assert.Equal(Ok<int, string>(2).Or(Ok<int, string>(200)), Ok<int, string>(2));
+            Assert.Equal(Ok<int, string>(2), Ok<int, string>(2).Or(Error<int, string>("late error")));
+            Assert.Equal(Ok<int, string>(2), Error<int, string>("early error").Or(Ok<int, string>(2)));
+            Assert.Equal(Error<int, string>("late error"), Error<int, string>("not a 2").Or(Error<int, string>("late error")));
+            Assert.Equal(Ok<int, string>(2), Ok<int, string>(2).Or(Ok<int, string>(200)));
         }
 
         [Fact]
@@ -142,18 +136,18 @@ namespace Rlx.Tests
             Result<int, int> Square(int x) => Ok<int, int>(x * x);
             Result<int, int> Error(int x) => Error<int, int>(x);
 
-            Assert.Equal(Ok<int, int>(2).OrElse(Square).OrElse(Square), Ok<int, int>(2));
-            Assert.Equal(Ok<int, int>(2).OrElse(Error).OrElse(Square), Ok<int, int>(2));
-            Assert.Equal(Error<int, int>(3).OrElse(Square).OrElse(Error), Ok<int, int>(9));
-            Assert.Equal(Error<int, int>(3).OrElse(Error).OrElse(Error), Error<int, int>(3));
+            Assert.Equal(Ok<int, int>(2), Ok<int, int>(2).OrElse(Square).OrElse(Square));
+            Assert.Equal(Ok<int, int>(2), Ok<int, int>(2).OrElse(Error).OrElse(Square));
+            Assert.Equal(Ok<int, int>(9), Error<int, int>(3).OrElse(Square).OrElse(Error));
+            Assert.Equal(Error<int, int>(3), Error<int, int>(3).OrElse(Error).OrElse(Error));
         }
 
         [Fact]
         public void UnwrapOrTests()
         {
             const int optionB = 2;
-            Assert.Equal(Ok<int, string>(9).UnwrapOr(optionB), 9);
-            Assert.Equal(Error<int, string>("error").UnwrapOr(optionB), optionB);
+            Assert.Equal(9, Ok<int, string>(9).UnwrapOr(optionB));
+            Assert.Equal(optionB, Error<int, string>("error").UnwrapOr(optionB));
         }
 
         [Fact]
@@ -161,14 +155,14 @@ namespace Rlx.Tests
         {
             int Count(string x) => x.Length;
 
-            Assert.Equal(Ok<int, string>(2).UnwrapOrElse(Count), 2);
-            Assert.Equal(Error<int, string>("foo").UnwrapOrElse(Count), 3);
+            Assert.Equal(2, Ok<int, string>(2).UnwrapOrElse(Count));
+            Assert.Equal(3, Error<int, string>("foo").UnwrapOrElse(Count));
         }
 
         [Fact]
         public void UnwrapTests()
         {
-            Assert.Equal(Ok<int, string>(2).Unwrap(), 2);
+            Assert.Equal(2, Ok<int, string>(2).Unwrap());
             var exception = Assert.Throws<RlxException>(() => Error<int, string>("emergency failure").Unwrap());
             Assert.Equal("emergency failure", exception.Message);
         }
@@ -185,7 +179,7 @@ namespace Rlx.Tests
         {
             var exception = Assert.Throws<RlxException>(() => Ok<int, string>(2).UnwrapError());
             Assert.Equal("2", exception.Message);
-            Assert.Equal(Error<int, string>("emergency failure").UnwrapError(), "emergency failure");
+            Assert.Equal("emergency failure", Error<int, string>("emergency failure").UnwrapError());
         }
 
         [Fact]

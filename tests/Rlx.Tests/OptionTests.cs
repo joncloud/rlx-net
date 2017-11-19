@@ -23,7 +23,7 @@ namespace Rlx.Tests
         [Fact]
         public void ExpectTests()
         {
-            Assert.Equal(Some("value").Expect("the world is ending"), "value");
+            Assert.Equal("value", Some("value").Expect("the world is ending"));
             var exception = Assert.Throws<RlxException>(() => None<string>().Expect("the world is ending"));
             Assert.Equal("the world is ending", exception.Message);
         }
@@ -31,23 +31,23 @@ namespace Rlx.Tests
         [Fact]
         public void UnwrapTests()
         {
-            Assert.Equal(Some("air").Unwrap(), "air");
+            Assert.Equal("air", Some("air").Unwrap());
             Assert.Throws<RlxException>(() => None<string>().Unwrap());
         }
 
         [Fact]
         public void UnwrapOrTests()
         {
-            Assert.Equal(Some("car").UnwrapOr("bike"), "car");
-            Assert.Equal(None<string>().UnwrapOr("bike"), "bike");
+            Assert.Equal("car", Some("car").UnwrapOr("bike"));
+            Assert.Equal("bike", None<string>().UnwrapOr("bike"));
         }
 
         [Fact]
         public void UnwrapOrElseTests()
         {
             const int k = 10;
-            Assert.Equal(Some(4).UnwrapOrElse(() => 2 * k), 4);
-            Assert.Equal(None<int>().UnwrapOrElse(() => 2 * k), 20);
+            Assert.Equal(4, Some(4).UnwrapOrElse(() => 2 * k));
+            Assert.Equal(20, None<int>().UnwrapOrElse(() => 2 * k));
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Rlx.Tests
         {
             var maybeSomeString = Some("Hello, World!");
             var maybeSomeLength = maybeSomeString.Map(s => s.Length);
-            Assert.Equal(maybeSomeLength, Some(13));
+            Assert.Equal(Some(13), maybeSomeLength);
         }
 
         [Fact]
@@ -63,60 +63,60 @@ namespace Rlx.Tests
         {
             var maybeSomeString = Some("Hello, World!");
             var maybeSomeLength = maybeSomeString.Map(s => Task.FromResult(s.Length));
-            Assert.Equal(await maybeSomeLength.ToSync(), Some(13));
+            Assert.Equal(Some(13), await maybeSomeLength.ToSync());
         }
 
         [Fact]
         public void MapOrTests()
         {
-            Assert.Equal(Some("foo").MapOr(42, v => v.Length), 3);
-            Assert.Equal(None<string>().MapOr(42, v => v.Length), 42);
+            Assert.Equal(3, Some("foo").MapOr(42, v => v.Length));
+            Assert.Equal(42, None<string>().MapOr(42, v => v.Length));
         }
 
         [Fact]
         public void MapOrElseTests()
         {
             const int k = 21;
-            Assert.Equal(Some("foo").MapOrElse(() => 2 * k, v => v.Length), 3);
-            Assert.Equal(None<string>().MapOrElse(() => 2 * k, v => v.Length), 42);
+            Assert.Equal(3, Some("foo").MapOrElse(() => 2 * k, v => v.Length));
+            Assert.Equal(42, None<string>().MapOrElse(() => 2 * k, v => v.Length));
         }
 
         [Fact]
         public async Task MapOrElseAsyncTests()
         {
             const int k = 21;
-            Assert.Equal(await Some("Foo").MapOrElse(() => Task.FromResult(2 * k), v => Task.FromResult(v.Length)), 3);
-            Assert.Equal(await None<string>().MapOrElse(() => Task.FromResult(2 * k), v => Task.FromResult(v.Length)), 42);
+            Assert.Equal(3, await Some("Foo").MapOrElse(() => Task.FromResult(2 * k), v => Task.FromResult(v.Length)));
+            Assert.Equal(42, await None<string>().MapOrElse(() => Task.FromResult(2 * k), v => Task.FromResult(v.Length)));
         }
 
         [Fact]
         public void OkOrTests()
         {
-            Assert.Equal(Some("foo").OkOr(0), Ok<string, int>("foo"));
-            Assert.Equal(None<string>().OkOr(0), Error<string, int>(0));
+            Assert.Equal(Ok<string, int>("foo"), Some("foo").OkOr(0));
+            Assert.Equal(Error<string, int>(0), None<string>().OkOr(0));
         }
 
         [Fact]
         public void OkOrElseTests()
         {
-            Assert.Equal(Some("foo").OkOrElse(() => 0), Ok<string, int>("foo"));
-            Assert.Equal(None<string>().OkOrElse(() => 0), Error<string, int>(0));
+            Assert.Equal(Ok<string, int>("foo"), Some("foo").OkOrElse(() => 0));
+            Assert.Equal(Error<string, int>(0), None<string>().OkOrElse(() => 0));
         }
 
         [Fact]
         public void GetEnumeratorTests()
         {
-            Assert.Equal(Some("foo"), new[] { "foo" });
+            Assert.Equal(new[] { "foo" }, Some("foo"));
             Assert.Empty(None<string>());
         }
 
         [Fact]
         public void AndTests()
         {
-            Assert.Equal(Some(2).And(None<int>()), None<int>());
-            Assert.Equal(None<string>().And(Some("foo")), None<string>());
-            Assert.Equal(Some(2).And(Some("foo")), Some("foo"));
-            Assert.Equal(None<int>().And(None<string>()), None<string>());
+            Assert.Equal(None<int>(), Some(2).And(None<int>()));
+            Assert.Equal(None<string>(), None<string>().And(Some("foo")));
+            Assert.Equal(Some("foo"), Some(2).And(Some("foo")));
+            Assert.Equal(None<string>(), None<int>().And(None<string>()));
         }
 
         [Fact]
@@ -125,19 +125,19 @@ namespace Rlx.Tests
             Option<int> Square(int x) => Some(x * x);
             Option<int> Nope(int _) => None<int>();
 
-            Assert.Equal(Some(2).AndThen(Square).AndThen(Square), Some(16));
-            Assert.Equal(Some(2).AndThen(Square).AndThen(Nope), None<int>());
-            Assert.Equal(Some(2).AndThen(Nope).AndThen(Square), None<int>());
-            Assert.Equal(None<int>().AndThen(Square).AndThen(Square), None<int>());
+            Assert.Equal(Some(16), Some(2).AndThen(Square).AndThen(Square));
+            Assert.Equal(None<int>(), Some(2).AndThen(Square).AndThen(Nope));
+            Assert.Equal(None<int>(), Some(2).AndThen(Nope).AndThen(Square));
+            Assert.Equal(None<int>(), None<int>().AndThen(Square).AndThen(Square));
         }
 
         [Fact]
         public void OrTests()
         {
-            Assert.Equal(Some(2).Or(None<int>()), Some(2));
-            Assert.Equal(None<int>().Or(Some(100)), Some(100));
-            Assert.Equal(Some(2).Or(Some(100)), Some(2));
-            Assert.Equal(None<int>().Or(None<int>()), None<int>());
+            Assert.Equal(Some(2), Some(2).Or(None<int>()));
+            Assert.Equal(Some(100), None<int>().Or(Some(100)));
+            Assert.Equal(Some(2), Some(2).Or(Some(100)));
+            Assert.Equal(None<int>(), None<int>().Or(None<int>()));
         }
 
         [Fact]
@@ -146,9 +146,9 @@ namespace Rlx.Tests
             Option<string> Nobody() => None<string>();
             Option<string> Vikings() => Some("vikings");
 
-            Assert.Equal(Some("barbarians").OrElse(() => Vikings()), Some("barbarians"));
-            Assert.Equal(None<string>().OrElse(() => Vikings()), Some("vikings"));
-            Assert.Equal(None<string>().OrElse(() => Nobody()), None<string>());
+            Assert.Equal(Some("barbarians"), Some("barbarians").OrElse(() => Vikings()));
+            Assert.Equal(Some("vikings"), None<string>().OrElse(() => Vikings()));
+            Assert.Equal(None<string>(), None<string>().OrElse(() => Nobody()));
         }
 
         [Fact]
