@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>provides several helper functions like Some, None, Ok, Err</Description>
+    <Description>Provides several helper functions like Some, None, Ok, Error</Description>
     <Copyright>Copyright (c) 2017 joncloud (jdberube@gmail.com)</Copyright>
     <AssemblyTitle>Rlx</AssemblyTitle>
     <Authors>joncloud</Authors>
@@ -18,7 +18,7 @@
     <PackageId>Rlx</PackageId>
     <PackageTags>result;option;rustlang</PackageTags>
     <PackageReleaseNotes>https://github.com/joncloud/rlx-net/releases</PackageReleaseNotes>
-    <PackageIconUrl>https://raw.githubusercontent.com/joncloud/rlx-net/master/nuget.png</PackageIconUrl>
+    <!--<PackageIconUrl>https://raw.githubusercontent.com/joncloud/rlx-net/master/nuget.png</PackageIconUrl>-->
     <PackageProjectUrl>https://github.com/joncloud/rlx-net</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/joncloud/rlx-net/master/LICENSE.md</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
