@@ -13,4 +13,4 @@ script:
  - dotnet build --configuration=Release
  - dotnet test --configuration=Release ./tests/Rlx.Tests/
  - dotnet pack --configuration=Release --version-suffix="beta$TRAVIS_BUILD_ID" ./src/Rlx/
- - dotnet nuget push $(ls src/Rlx/bin/Release/*.nupkg) -k $NUGET_API_KEY
+ - ./push_if_set.sh
