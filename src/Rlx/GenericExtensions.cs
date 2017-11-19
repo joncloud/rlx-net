@@ -4,7 +4,7 @@ namespace Rlx
 {
     public static class GenericExtensions
     {
-        public static Option<T> ToOption<T>(this T instance) where T : class
+        public static Option<T> ToOption<T>(this T instance)
             => instance == null ? None<T>() : Some(instance);
 
         public static Option<T> ToOption<T>(this T? instance) where T : struct

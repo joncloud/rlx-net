@@ -17,6 +17,15 @@ namespace Rlx.Tests
         [Fact]
         public void StructTests()
         {
+            int i = 123;
+            Assert.Equal(Some(123), i.ToOption());
+            i = 0;
+            Assert.Equal(Some(0), i.ToOption());
+        }
+
+        [Fact]
+        public void NullableStructTests()
+        {
             int? i = 123;
             Assert.Equal(Some(123), i.ToOption());
             i = null;
