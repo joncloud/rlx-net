@@ -56,10 +56,10 @@ namespace Rlx
             return new Result<TResult, TError>(_error, _errorComparer);
         }
 
-        public ResultAsync<TResult, TError> Map<TResult>(Func<TValue, Task<TResult>> fn)
+        public ResultTask<TResult, TError> Map<TResult>(Func<TValue, Task<TResult>> fn)
         {
-            if (IsOk) return new ResultAsync<TResult, TError>(fn(_value));
-            return new ResultAsync<TResult, TError>(Task.FromResult(_error));
+            if (IsOk) return new ResultTask<TResult, TError>(fn(_value));
+            return new ResultTask<TResult, TError>(Task.FromResult(_error));
         }
 
         public Result<TValue, TResult> MapError<TResult>(Func<TError, TResult> fn)
@@ -68,10 +68,10 @@ namespace Rlx
             return new Result<TValue, TResult>(fn(_error));
         }
 
-        public ResultAsync<TValue, TResult> MapError<TResult>(Func<TError, Task<TResult>> fn)
+        public ResultTask<TValue, TResult> MapError<TResult>(Func<TError, Task<TResult>> fn)
         {
-            if (IsOk) return new ResultAsync<TValue, TResult>(Task.FromResult(_value));
-            return new ResultAsync<TValue, TResult>(fn(_error));
+            if (IsOk) return new ResultTask<TValue, TResult>(Task.FromResult(_value));
+            return new ResultTask<TValue, TResult>(fn(_error));
         }
 
         public Result<TResult, TError> And<TResult>(Result<TResult, TError> result)

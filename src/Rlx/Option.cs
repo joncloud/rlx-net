@@ -63,10 +63,10 @@ namespace Rlx
             return Option<TResult>.None;
         }
 
-        public OptionAsync<TResult> Map<TResult>(Func<T, Task<TResult>> fn)
+        public OptionTask<TResult> Map<TResult>(Func<T, Task<TResult>> fn)
         {
-            if (IsSome) return new OptionAsync<TResult>(fn(_value));
-            return new OptionAsync<TResult>();
+            if (IsSome) return new OptionTask<TResult>(fn(_value));
+            return new OptionTask<TResult>();
         }
 
         public TResult MapOr<TResult>(TResult def, Func<T, TResult> fn)
@@ -93,10 +93,10 @@ namespace Rlx
             return Option<TResult>.None;
         }
 
-        public OptionAsync<TResult> And<TResult>(OptionAsync<TResult> optionB)
+        public OptionTask<TResult> And<TResult>(OptionTask<TResult> optionB)
         {
             if (IsSome) return optionB;
-            return OptionAsync<TResult>.None;
+            return OptionTask<TResult>.None;
         }
 
         public Option<TResult> AndThen<TResult>(Func<T, Option<TResult>> fn)
@@ -105,10 +105,10 @@ namespace Rlx
             return Option<TResult>.None;
         }
 
-        public OptionAsync<TResult> AndThen<TResult>(Func<T, OptionAsync<TResult>> fn)
+        public OptionTask<TResult> AndThen<TResult>(Func<T, OptionTask<TResult>> fn)
         {
             if (IsSome) return fn(_value);
-            return OptionAsync<TResult>.None;
+            return OptionTask<TResult>.None;
         }
 
         public Result<T, TError> OkOr<TError>(TError error)
@@ -129,9 +129,9 @@ namespace Rlx
             return optionB;
         }
 
-        public OptionAsync<T> Or(OptionAsync<T> optionB)
+        public OptionTask<T> Or(OptionTask<T> optionB)
         {
-            if (IsSome) return new OptionAsync<T>(Task.FromResult(_value));
+            if (IsSome) return new OptionTask<T>(Task.FromResult(_value));
             return optionB;
         }
 
@@ -141,9 +141,9 @@ namespace Rlx
             return fn();
         }
 
-        public OptionAsync<T> OrElse(Func<OptionAsync<T>> fn)
+        public OptionTask<T> OrElse(Func<OptionTask<T>> fn)
         {
-            if (IsSome) return new OptionAsync<T>(Task.FromResult(_value));
+            if (IsSome) return new OptionTask<T>(Task.FromResult(_value));
             return fn();
         }
 

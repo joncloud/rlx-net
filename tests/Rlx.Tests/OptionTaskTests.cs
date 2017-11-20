@@ -7,25 +7,11 @@ using static Rlx.Functions;
 
 namespace Rlx.Tests
 {
-    public class OptionAsyncTests
+    public class OptionTaskTests
     {
         Task<T> T<T>(T value)
             => Task.FromResult(value);
-
-        [Fact]
-        public void IsSomeTests()
-        {
-            Assert.True(Some(T(2)).IsSome);
-            Assert.False(NoneAsync<int>().IsSome);
-        }
-
-        [Fact]
-        public void IsNoneTests()
-        {
-            Assert.False(Some(T(2)).IsNone);
-            Assert.True(NoneAsync<int>().IsNone);
-        }
-
+        
         [Fact]
         public async Task ExpectTests()
         {
@@ -51,7 +37,7 @@ namespace Rlx.Tests
         [Fact]
         public async Task UnwrapOrDefaultTests()
         {
-            ResultAsync<int, string> Parse(string s)
+            ResultTask<int, string> Parse(string s)
                 => int.TryParse(s, out var r)
                 ? Ok<int, string>(T(r))
                 : Error<int, string>(T("Invalid number"));
@@ -96,17 +82,6 @@ namespace Rlx.Tests
             Assert.Equal(Some(100), await NoneAsync<int>().Or(Some(T(100))).ToSync());
             Assert.Equal(Some(2), await Some(T(2)).Or(Some(T(100))).ToSync());
             Assert.Equal(None<int>(), await NoneAsync<int>().Or(NoneAsync<int>()).ToSync());
-        }
-
-        [Fact]
-        public async Task OrElseTests()
-        {
-            OptionAsync<string> Nobody() => NoneAsync<string>();
-            OptionAsync<string> Vikings() => Some(T("vikings"));
-
-            Assert.Equal(Some("barbarians"), await Some(T("barbarians")).OrElse(() => Vikings()).ToSync());
-            Assert.Equal(Some("vikings"), await NoneAsync<string>().OrElse(() => Vikings()).ToSync());
-            Assert.Equal(None<string>(), await NoneAsync<string>().OrElse(() => Nobody()).ToSync());
         }
     }
 }

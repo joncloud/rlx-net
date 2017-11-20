@@ -3,19 +3,19 @@ using System.Threading.Tasks;
 
 namespace Rlx
 {
-    public struct ResultAsync<TValue, TError>
+    public struct ResultTask<TValue, TError>
     {
-        public static readonly ResultAsync<TValue, TError> None = new ResultAsync<TValue, TError>();
+        public static readonly ResultTask<TValue, TError> None = new ResultTask<TValue, TError>();
         readonly Task<TValue> _value;
         readonly Task<TError> _error;
-        public ResultAsync(Task<TValue> result)
+        public ResultTask(Task<TValue> result)
         {
             IsOk = true;
             _value = result;
             _error = null;
         }
 
-        public ResultAsync(Task<TError> error)
+        public ResultTask(Task<TError> error)
         {
             IsOk = false;
             _value = null;
@@ -25,13 +25,13 @@ namespace Rlx
         public bool IsOk { get; }
         public bool IsError => !IsOk;
 
-        public OptionAsync<TValue> Ok()
+        public OptionTask<TValue> Ok()
         {
             if (IsOk) return Functions.Some(_value);
             return Functions.NoneAsync<TValue>();
         }
 
-        public OptionAsync<TError> Error()
+        public OptionTask<TError> Error()
         {
             if (IsOk) return Functions.NoneAsync<TError>();
             return Functions.Some(_error);
@@ -43,16 +43,16 @@ namespace Rlx
             return _error.Select(x => new Result<TValue, TError>(x));
         }
 
-        public ResultAsync<TResult, TError> Map<TResult>(Func<TValue, Task<TResult>> fn)
+        public ResultTask<TResult, TError> Map<TResult>(Func<TValue, Task<TResult>> fn)
         {
-            if (IsOk) return new ResultAsync<TResult, TError>(_value.Select(fn));
-            return new ResultAsync<TResult, TError>(_error);
+            if (IsOk) return new ResultTask<TResult, TError>(_value.Select(fn));
+            return new ResultTask<TResult, TError>(_error);
         }
 
-        public ResultAsync<TValue, TResult> MapError<TResult>(Func<TError, Task<TResult>> fn)
+        public ResultTask<TValue, TResult> MapError<TResult>(Func<TError, Task<TResult>> fn)
         {
-            if (IsOk) return new ResultAsync<TValue, TResult>(_value);
-            return new ResultAsync<TValue, TResult>(_error.Select(fn));
+            if (IsOk) return new ResultTask<TValue, TResult>(_value);
+            return new ResultTask<TValue, TResult>(_error.Select(fn));
         }
 
         public async Task<TValue> UnwrapAsync()
