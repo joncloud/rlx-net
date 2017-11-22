@@ -43,10 +43,22 @@ namespace Rlx
             return _error.Select(x => new Result<TValue, TError>(x));
         }
 
+        public ResultTask<TResult, TError> Map<TResult>(Func<TValue, TResult> fn)
+        {
+            if (IsOk) return new ResultTask<TResult, TError>(_value.Select(fn));
+            return new ResultTask<TResult, TError>(_error);
+        }
+
         public ResultTask<TResult, TError> Map<TResult>(Func<TValue, Task<TResult>> fn)
         {
             if (IsOk) return new ResultTask<TResult, TError>(_value.Select(fn));
             return new ResultTask<TResult, TError>(_error);
+        }
+
+        public ResultTask<TValue, TResult> MapError<TResult>(Func<TError, TResult> fn)
+        {
+            if (IsOk) return new ResultTask<TValue, TResult>(_value);
+            return new ResultTask<TValue, TResult>(_error.Select(fn));
         }
 
         public ResultTask<TValue, TResult> MapError<TResult>(Func<TError, Task<TResult>> fn)

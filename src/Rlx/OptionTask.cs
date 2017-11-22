@@ -50,6 +50,9 @@ namespace Rlx
         public Task<TResult> MapOr<TResult>(TResult def, Func<T, TResult> fn)
             => _task.Select(x => x.MapOr(def, fn));
 
+        public Task<TResult> MapOrElse<TResult>(Func<TResult> def, Func<T, TResult> fn)
+            => _task.Select(x => x.MapOrElse(def, fn));
+
         public Task<TResult> MapOrElse<TResult>(Func<Task<TResult>> def, Func<T, Task<TResult>> fn)
             => _task.Select(x => x.MapOrElse(def, fn));
 
