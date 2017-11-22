@@ -6,7 +6,7 @@ namespace Rlx
 {
     public struct OptionTask<T>
     {
-        public static readonly OptionTask<T> None = new OptionTask<T>();
+        public static readonly OptionTask<T> None = new OptionTask<T>(Task.FromResult(Option<T>.None));
         readonly Task<Option<T>> _task;
         
         public OptionTask(Task<T> task)
