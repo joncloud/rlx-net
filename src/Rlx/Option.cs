@@ -122,7 +122,19 @@ namespace Rlx
             if (IsSome) return Functions.Ok<T, TError>(_value);
             return Functions.Error<T, TError>(error());
         }
-        
+
+        public Result<TValue, T> ErrorOr<TValue>(TValue value)
+        {
+            if (IsSome) return Functions.Error<TValue, T>(_value);
+            return Functions.Ok<TValue, T>(value);
+        }
+
+        public Result<TValue, T> ErrorOrElse<TValue>(Func<TValue> value)
+        {
+            if (IsSome) return Functions.Error<TValue, T>(_value);
+            return Functions.Ok<TValue, T>(value());
+        }
+
         public Option<T> Or(Option<T> optionB)
         {
             if (IsSome) return this;

@@ -27,6 +27,9 @@ namespace Rlx
         public Task<T> UnwrapOrAsync(T def)
             => _task.Select(x => x.UnwrapOr(def));
 
+        public Task<T> UnwrapOrElseAsync(Func<T> fn)
+            => _task.Select(x => x.UnwrapOrElse(fn));
+
         public Task<T> UnwrapOrDefaultAsync()
             => _task.Select(x => x.UnwrapOrDefault());
 
