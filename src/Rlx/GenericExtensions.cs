@@ -1,4 +1,5 @@
-﻿using static Rlx.Functions;
+﻿using System.Threading.Tasks;
+using static Rlx.Functions;
 
 namespace Rlx
 {
@@ -9,5 +10,11 @@ namespace Rlx
 
         public static Option<T> ToOption<T>(this T? instance) where T : struct
             => instance.HasValue ? Some(instance.Value) : None<T>();
+
+        public static OptionTask<T> ToOption<T>(this Task<T> task)
+            => new OptionTask<T>(task.Select(instance => instance.ToOption()));
+
+        public static OptionTask<T> ToOption<T>(this Task<T?> task) where T : struct
+            => new OptionTask<T>(task.Select(instance => instance.ToOption()));
     }
 }
