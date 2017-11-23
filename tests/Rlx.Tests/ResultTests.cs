@@ -136,10 +136,10 @@ namespace Rlx.Tests
             Result<int, int> Square(int x) => Ok<int, int>(x * x);
             Result<int, int> Error(int x) => Error<int, int>(x);
 
-            Assert.Equal(Ok<int, int>(2), Ok<int, int>(2).OrElse(Square).OrElse(Square));
-            Assert.Equal(Ok<int, int>(2), Ok<int, int>(2).OrElse(Error).OrElse(Square));
-            Assert.Equal(Ok<int, int>(9), Error<int, int>(3).OrElse(Square).OrElse(Error));
-            Assert.Equal(Error<int, int>(3), Error<int, int>(3).OrElse(Error).OrElse(Error));
+            Assert.Equal(Ok<int, int>(2), Ok<int, int>(2).OrElse(x => Square(x)).OrElse(x => Square(x)));
+            Assert.Equal(Ok<int, int>(2), Ok<int, int>(2).OrElse(x => Error(x)).OrElse(x => Square(x)));
+            Assert.Equal(Ok<int, int>(9), Error<int, int>(3).OrElse(x => Square(x)).OrElse(x => Error(x)));
+            Assert.Equal(Error<int, int>(3), Error<int, int>(3).OrElse(x => Error(x)).OrElse(x => Error(x)));
         }
 
         [Fact]
