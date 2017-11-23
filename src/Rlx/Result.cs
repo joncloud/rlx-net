@@ -104,10 +104,22 @@ namespace Rlx
             return fn(_error);
         }
 
-        public Result<TValue, TError> AndThen(Func<TValue, Result<TValue, TError>> fn)
+        public ResultTask<TValue, TError> OrElse(Func<TValue, ResultTask<TValue, TError>> fn)
+        {
+            if (IsOk) return new ResultTask<TValue, TError>(Task.FromResult(_value));
+            return fn(_value);
+        }
+
+        public Result<TResult, TError> AndThen<TResult>(Func<TValue, Result<TResult, TError>> fn)
         {
             if (IsOk) return fn(_value);
-            return this;
+            return new Result<TResult, TError>(_error);
+        }
+
+        public ResultTask<TResult, TError> AndThen<TResult>(Func<TValue, ResultTask<TResult, TError>> fn)
+        {
+            if (IsOk) return fn(_value);
+            return new ResultTask<TResult, TError>(Task.FromResult(_error));
         }
 
         public TValue Unwrap()

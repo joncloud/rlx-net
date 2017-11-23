@@ -1,123 +1,113 @@
 ﻿using System;
 using System.Threading.Tasks;
+using static Rlx.Functions;
 
 namespace Rlx
 {
     public struct ResultTask<TValue, TError>
     {
-        public static readonly ResultTask<TValue, TError> None = new ResultTask<TValue, TError>();
-        readonly Task<TValue> _value;
-        readonly Task<TError> _error;
-        public ResultTask(Task<TValue> result)
-        {
-            IsOk = true;
-            _value = result;
-            _error = null;
-        }
+        readonly Task<Result<TValue, TError>> _task;
+        public ResultTask(Task<Result<TValue, TError>> task)
+            => _task = task;
 
-        public ResultTask(Task<TError> error)
-        {
-            IsOk = false;
-            _value = null;
-            _error = error;
-        }
+        public ResultTask(Task<TValue> task)
+            : this(task.Select(value => Ok<TValue, TError>(value))) { }
 
-        public bool IsOk { get; }
-        public bool IsError => !IsOk;
+        public ResultTask(Task<TError> task)
+            : this(task.Select(error => Error<TValue, TError>(error))) { }
 
         public OptionTask<TValue> Ok()
         {
-            if (IsOk) return Functions.Some(_value);
-            return Functions.NoneAsync<TValue>();
+            var task = _task.Select(x => x.Ok());
+            return new OptionTask<TValue>(task);
         }
 
         public OptionTask<TError> Error()
         {
-            if (IsOk) return Functions.NoneAsync<TError>();
-            return Functions.Some(_error);
+            var task = _task.Select(x => x.Error());
+            return new OptionTask<TError>(task);
         }
 
         public Task<Result<TValue, TError>> ToSync()
-        {
-            if (IsOk) return _value.Select(x => new Result<TValue, TError>(x));
-            return _error.Select(x => new Result<TValue, TError>(x));
-        }
+            => _task;
 
         public ResultTask<TResult, TError> Map<TResult>(Func<TValue, TResult> fn)
         {
-            if (IsOk) return new ResultTask<TResult, TError>(_value.Select(fn));
-            return new ResultTask<TResult, TError>(_error);
+            var task = _task.Select(x => x.Map(fn));
+            return new ResultTask<TResult, TError>(task);
         }
 
         public ResultTask<TResult, TError> Map<TResult>(Func<TValue, Task<TResult>> fn)
         {
-            if (IsOk) return new ResultTask<TResult, TError>(_value.Select(fn));
-            return new ResultTask<TResult, TError>(_error);
+            var task = _task.Select(async x =>
+            {
+                if (x.IsOk)
+                {
+                    var y = await fn(x.Unwrap());
+                    return Ok<TResult, TError>(y);
+                }
+                return Error<TResult, TError>(x.UnwrapError());
+            });
+            return new ResultTask<TResult, TError>(task);
         }
 
         public ResultTask<TValue, TResult> MapError<TResult>(Func<TError, TResult> fn)
         {
-            if (IsOk) return new ResultTask<TValue, TResult>(_value);
-            return new ResultTask<TValue, TResult>(_error.Select(fn));
+            var task = _task.Select(x => x.MapError(fn));
+            return new ResultTask<TValue, TResult>(task);
         }
 
         public ResultTask<TValue, TResult> MapError<TResult>(Func<TError, Task<TResult>> fn)
         {
-            if (IsOk) return new ResultTask<TValue, TResult>(_value);
-            return new ResultTask<TValue, TResult>(_error.Select(fn));
-        }
-
-        public async Task<TValue> UnwrapAsync()
-        {
-            if (IsOk) return await _value;
-            var error = await _error;
-            throw new RlxException(error.ToString());
-        }
-
-        public async Task<TError> UnwrapErrorAsync()
-        {
-            if (IsOk)
+            var task = _task.Select(async x =>
             {
-                var value = await _value;
-                throw new RlxException(value.ToString());
-            }
-            return await _error;
+                if (x.IsOk)
+                {
+                    return Ok<TValue, TResult>(x.Unwrap());
+                }
+                var y = await fn(x.UnwrapError());
+                return Error<TValue, TResult>(y);
+            });
+            return new ResultTask<TValue, TResult>(task);
         }
+
+        public ResultTask<TValue, TError> OrElse(Func<TError, Result<TValue, TError>> fn)
+        {
+            var task = _task.Select(x => x.OrElse(fn));
+            return new ResultTask<TValue, TError>(task);
+        }
+
+        public ResultTask<TResult, TError> AndThen<TResult>(Func<TValue, Result<TResult, TError>> fn)
+        {
+            var task = _task.Select(x => x.AndThen(fn));
+            return new ResultTask<TResult, TError>(task);
+        }
+
+        public ResultTask<TResult, TError> AndThen<TResult>(Func<TValue, ResultTask<TResult, TError>> fn)
+        {
+            var task = _task.Select(x => x.AndThen(fn).ToSync());
+            return new ResultTask<TResult, TError>(task);
+        }
+
+        public Task<TValue> UnwrapAsync()
+            => _task.Select(x => x.Unwrap());
+
+        public Task<TError> UnwrapErrorAsync()
+            => _task.Select(x => x.UnwrapError());
 
         public Task<TValue> UnwrapOrAsync(TValue optionB)
-        {
-            if (IsOk) return _value;
-            return Task.FromResult(optionB);
-        }
+            => _task.Select(x => x.UnwrapOr(optionB));
 
-        public async Task<TValue> UnwrapOrElseAsync(Func<TError, TValue> fn)
-        {
-            if (IsOk) return await _value;
-            var error = await _error;
-            return fn(error);
-        }
+        public Task<TValue> UnwrapOrElseAsync(Func<TError, TValue> fn)
+            => _task.Select(x => x.UnwrapOrElse(fn));
 
         public Task<TValue> UnwrapOrDefaultAsync()
-        {
-            if (IsOk) return _value;
-            return Task.FromResult(default(TValue));
-        }
+            => _task.Select(x => x.UnwrapOrDefault());
 
-        public async Task<TValue> ExpectAsync(string message)
-        {
-            if (IsOk) return await _value;
-            var error = await _error;
-            throw new RlxException($"{message}: {error}");
-        }
+        public Task<TValue> ExpectAsync(string message)
+            => _task.Select(x => x.Expect(message));
 
-        public async Task<TError> ExpectErrorAsync(string message)
-        {
-            if (IsOk)
-            {
-                var value = await _value;
-                throw new RlxException($"{message}: {value}");
-            }
-            return await _error;
-        }
+        public Task<TError> ExpectErrorAsync(string message)
+            => _task.Select(x => x.ExpectError(message));
     }
 }

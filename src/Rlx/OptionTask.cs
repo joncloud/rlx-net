@@ -65,10 +65,34 @@ namespace Rlx
             return new OptionTask<TResult>(task);
         }
 
+        public OptionTask<TResult> AndThen<TResult>(Func<T, Option<TResult>> fn)
+        {
+            var task = _task.Select(x => x.AndThen(fn));
+            return new OptionTask<TResult>(task);
+        }
+
         public OptionTask<T> Or(OptionTask<T> optionB)
         {
             var task = _task.Select(async x => x.Or(await optionB.ToSync()));
             return new OptionTask<T>(task);
+        }
+
+        public OptionTask<T> OrElse(Func<Option<T>> fn)
+        {
+            var task = _task.Select(x => x.OrElse(fn));
+            return new OptionTask<T>(task);
+        }
+
+        public ResultTask<T, TError> OkOr<TError>(TError error)
+        {
+            var task = _task.Select(x => x.OkOr(error));
+            return new ResultTask<T, TError>(task);
+        }
+
+        public ResultTask<T, TError> OkOrElse<TError>(Func<TError> error)
+        {
+            var task = _task.Select(x => x.OkOrElse(error));
+            return new ResultTask<T, TError>(task);
         }
     }
 }
