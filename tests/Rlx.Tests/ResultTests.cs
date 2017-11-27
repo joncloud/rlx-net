@@ -39,11 +39,6 @@ namespace Rlx.Tests
         [Fact]
         public void MapTests()
         {
-            Result<int, string> Parse(string s)
-                => int.TryParse(s, out var r)
-                ? Ok<int, string>(r)
-                : Error<int, string>("Invalid number");
-
             const string line = "1\n2\n3\n4\n";
             var values = new[] {
                 Ok<int, string>(2),
@@ -52,17 +47,12 @@ namespace Rlx.Tests
                 Ok<int, string>(8)
             };
             var nums = line.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            Assert.Equal(values, nums.Select(num => Parse(num).Map(i => i * 2)));
+            Assert.Equal(values, nums.Select(num => Parse.Int32(num).OkOr("Invalid number").Map(i => i * 2)));
         }
 
         [Fact]
         public async Task MapAsyncTests()
         {
-            Result<int, string> Parse(string s)
-                   => int.TryParse(s, out var r)
-                   ? Ok<int, string>(r)
-                   : Error<int, string>("Invalid number");
-
             const string line = "1\n2\n3\n4\n";
             var values = new[] {
                 Ok<int, string>(2),
@@ -71,7 +61,7 @@ namespace Rlx.Tests
                 Ok<int, string>(8)
             };
             var nums = line.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var tasks = nums.Select(num => Parse(num).Map(i => Task.FromResult(i * 2)).ToSync());
+            var tasks = nums.Select(num => Parse.Int32(num).OkOr("Invalid Number").Map(i => Task.FromResult(i * 2)).ToSync());
             Assert.Equal(values, await Task.WhenAll(tasks));
         }
 
@@ -192,15 +182,10 @@ namespace Rlx.Tests
         [Fact]
         public void UnwrapOrDefaultTests()
         {
-            Result<int, string> Parse(string s)
-                => int.TryParse(s, out var r)
-                ? Ok<int, string>(r)
-                : Error<int, string>("Invalid number");
-
             string goodYearFromInput = "1909";
             string badYearFromInput = "190blarg";
-            int goodYear = Parse(goodYearFromInput).UnwrapOrDefault();
-            int badYear = Parse(badYearFromInput).UnwrapOrDefault();
+            int goodYear = Parse.Int32(goodYearFromInput).OkOr("Invalid number").UnwrapOrDefault();
+            int badYear = Parse.Int32(badYearFromInput).OkOr("Invalid number").UnwrapOrDefault();
             Assert.Equal(1909, goodYear);
             Assert.Equal(0, badYear);
         }

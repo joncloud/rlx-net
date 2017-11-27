@@ -154,15 +154,10 @@ namespace Rlx.Tests
         [Fact]
         public void UnwrapOrDefaultTests()
         {
-            Result<int, string> Parse(string s)
-                => int.TryParse(s, out var r)
-                ? Ok<int, string>(r)
-                : Error<int, string>("Invalid number");
-
             string goodYearFromInput = "1909";
             string badYearFromInput = "190blarg";
-            int goodYear = Parse(goodYearFromInput).Ok().UnwrapOrDefault();
-            int badYear = Parse(badYearFromInput).Ok().UnwrapOrDefault();
+            int goodYear = Parse.Int32(goodYearFromInput).OkOr("Invalid number").Ok().UnwrapOrDefault();
+            int badYear = Parse.Int32(badYearFromInput).OkOr("Invalid number").Ok().UnwrapOrDefault();
             Assert.Equal(1909, goodYear);
             Assert.Equal(0, badYear);
         }

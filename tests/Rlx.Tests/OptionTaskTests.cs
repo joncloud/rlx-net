@@ -37,15 +37,10 @@ namespace Rlx.Tests
         [Fact]
         public async Task UnwrapOrDefaultTests()
         {
-            ResultTask<int, string> Parse(string s)
-                => int.TryParse(s, out var r)
-                ? Ok<int, string>(T(r))
-                : Error<int, string>(T("Invalid number"));
-
             string goodYearFromInput = "1909";
             string badYearFromInput = "190blarg";
-            int goodYear = await Parse(goodYearFromInput).Ok().UnwrapOrDefaultAsync();
-            int badYear = await Parse(badYearFromInput).Ok().UnwrapOrDefaultAsync();
+            int goodYear = await Parse.Int32(goodYearFromInput).OkOr("Invalid number").Map(x => Task.FromResult(x)).Ok().UnwrapOrDefaultAsync();
+            int badYear = await Parse.Int32(badYearFromInput).OkOr("Invalid number").Map(x => Task.FromResult(x)).Ok().UnwrapOrDefaultAsync();
             Assert.Equal(1909, goodYear);
             Assert.Equal(0, badYear);
         }
