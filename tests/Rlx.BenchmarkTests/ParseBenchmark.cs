@@ -11,18 +11,13 @@ namespace Rlx.BenchmarkTests
         string[] _invalid = Enumerable.Repeat("a", 100).ToArray();
         string[] _valid = Enumerable.Repeat("1", 100).ToArray();
 
-        static Option<int> Parse(string s)
-            => int.TryParse(s, out var r)
-            ? Some(r)
-            : None<int>();
-
         [Benchmark]
         public int ParseSome()
         {
             int total = 0;
             foreach (string item in _valid)
             {
-                total += Parse(item).UnwrapOrDefault();
+                total += Parse.Int32(item).UnwrapOrDefault();
             }
             return total;
         }
@@ -33,7 +28,7 @@ namespace Rlx.BenchmarkTests
             int total = 0;
             foreach (string item in _invalid)
             {
-                total += Parse(item).UnwrapOrDefault();
+                total += Parse.Int32(item).UnwrapOrDefault();
             }
             return total;
         }
