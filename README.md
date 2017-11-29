@@ -1,5 +1,6 @@
 # Rlx.NET
 [![Travis](https://img.shields.io/travis/joncloud/rlx-net.svg)](https://travis-ci.org/joncloud/rlx-net/)
+[![NuGet](https://img.shields.io/nuget/v/Rlx.svg)](https://www.nuget.org/packages/Rlx/)
 
 ## Description
 Rlx.NET provides core helper functions for abstracting null-references and errors.
