@@ -12,5 +12,5 @@ script:
  - dotnet restore
  - dotnet build --configuration=Release
  - dotnet test --configuration=Release ./tests/Rlx.Tests/
- - dotnet pack --configuration=Release --version-suffix="beta$TRAVIS_BUILD_ID" ./src/Rlx/
+ - dotnet pack --configuration=Release --version-suffix="beta$TRAVIS_BUILD_ID"
  - ./push_if_set.sh
