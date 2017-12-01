@@ -14,7 +14,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rlx.BenchmarkTests", "tests\Rlx.BenchmarkTests\Rlx.BenchmarkTests.csproj", "{916A548C-5DF5-4F82-9AAD-DFB3D2F307A4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rlx.MvcCore", "src\Rlx.MvcCore\Rlx.MvcCore.csproj", "{EB6C24DC-291F-4130-9C57-A0EB14354C95}"
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rlx.Mvc", "src\Rlx.Mvc\Rlx.Mvc.csproj", "{EB6C24DC-291F-4130-9C57-A0EB14354C95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
