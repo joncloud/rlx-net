@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Rlx;
+using Rlx.MvcCore;
 using System;
 using System.Threading.Tasks;
 using static Rlx.Functions;
@@ -31,13 +32,13 @@ namespace Microsoft.AspNetCore.Mvc
         static IActionResult ToErrorActionResult<T>(T error, Func<T, int> code, Func<T, Option<T>> opt)
         {
             int statusCode = code(error);
-            return opt(error).Map(_ => ErrorWithContent(error, statusCode)).UnwrapOrElse(() => ErrorNoContent(statusCode));
+            return opt(error).Map(_ => ErrorWithContent(error, statusCode)).UnwrapOrElse(() => ErrorNoContent(error, statusCode));
         }
 
-        static IActionResult ErrorNoContent(int statusCode)
-            => new StatusCodeResult(statusCode);
+        static IActionResult ErrorNoContent<T>(T error, int statusCode)
+            => new ErrorNoContentResult<T>(error, statusCode);
 
         static IActionResult ErrorWithContent<T>(T error, int statusCode)
-            => new ObjectResult(error) { StatusCode = statusCode };
+            => new ErrorWithContentResult<T>(error, statusCode);
     }
 }
