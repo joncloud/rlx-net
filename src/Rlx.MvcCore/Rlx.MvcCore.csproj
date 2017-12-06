@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Rlx\Rlx.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <Description>Extends Rlx to support common ASP.NET MVC Core functions</Description>
+    <Copyright>Copyright (c) 2017 joncloud (jdberube@gmail.com)</Copyright>
+    <AssemblyTitle>Rlx.MvcCore</AssemblyTitle>
+    <Authors>joncloud</Authors>
+    <AssemblyName>Rlx.MvcCore</AssemblyName>
+    <PackageId>Rlx.MvcCore</PackageId>
+    <PackageTags>result;option;rustlang;asp.net;mvc;core</PackageTags>
+    <PackageReleaseNotes>https://github.com/joncloud/rlx-net/releases</PackageReleaseNotes>
+    <!--<PackageIconUrl>https://raw.githubusercontent.com/joncloud/rlx-net/master/nuget.png</PackageIconUrl>-->
+    <PackageProjectUrl>https://github.com/joncloud/rlx-net</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/joncloud/rlx-net/master/LICENSE.md</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/joncloud/rlx-net</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>
