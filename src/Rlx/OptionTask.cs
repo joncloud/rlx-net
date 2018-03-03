@@ -71,6 +71,12 @@ namespace Rlx
             return new OptionTask<TResult>(task);
         }
 
+        public OptionTask<TResult> AndThen<TResult>(Func<T, OptionTask<TResult>> fn)
+        {
+            var task = _task.Select(x => x.AndThen(fn).ToSync());
+            return new OptionTask<TResult>(task);
+        }
+
         public OptionTask<T> Or(OptionTask<T> optionB)
         {
             var task = _task.Select(async x => x.Or(await optionB.ToSync()));

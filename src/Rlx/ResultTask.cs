@@ -77,6 +77,12 @@ namespace Rlx
             return new ResultTask<TValue, TError>(task);
         }
 
+        public ResultTask<TValue, TError> OrElse(Func<TError, ResultTask<TValue, TError>> fn)
+        {
+            var task = _task.Select(x => x.OrElse(fn).ToSync());
+            return new ResultTask<TValue, TError>(task);
+        }
+
         public ResultTask<TResult, TError> AndThen<TResult>(Func<TValue, Result<TResult, TError>> fn)
         {
             var task = _task.Select(x => x.AndThen(fn));
