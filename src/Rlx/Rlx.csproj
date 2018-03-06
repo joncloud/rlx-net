@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Provides several helper functions like Some, None, Ok, Error</Description>
+    <Description>Adds functional programming aspects using functions like Some, None, Ok, Error</Description>
     <Copyright>Copyright (c) 2017 joncloud (jdberube@gmail.com)</Copyright>
     <AssemblyTitle>Rlx</AssemblyTitle>
     <Authors>joncloud</Authors>
     <AssemblyName>Rlx</AssemblyName>
     <PackageId>Rlx</PackageId>
-    <PackageTags>result;option;rustlang</PackageTags>
+    <PackageTags>functional;result;option;rustlang</PackageTags>
     <PackageReleaseNotes>https://github.com/joncloud/rlx-net/releases</PackageReleaseNotes>
     <!--<PackageIconUrl>https://raw.githubusercontent.com/joncloud/rlx-net/master/nuget.png</PackageIconUrl>-->
     <PackageProjectUrl>https://github.com/joncloud/rlx-net</PackageProjectUrl>
