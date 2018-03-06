@@ -194,4 +194,13 @@ namespace Rlx
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
     }
+
+    public static class ResultExtensions
+    {
+        public static T Combine<T>(this Result<T, T> result) =>
+            result.UnwrapOrElse(error => error);
+
+        public static Task<T> CombineAsync<T>(this ResultTask<T, T> result) =>
+            result.UnwrapOrElseAsync(error => error);
+    }
 }

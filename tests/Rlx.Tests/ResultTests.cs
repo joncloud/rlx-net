@@ -189,5 +189,21 @@ namespace Rlx.Tests
             Assert.Equal(1909, goodYear);
             Assert.Equal(0, badYear);
         }
+
+        [Fact]
+        public void CombineTests()
+        {
+            var left = Ok<string, string>("abc").Combine();
+            var right = Error<string, string>("abc").Combine();
+            Assert.Equal(left, right);
+        }
+
+        [Fact]
+        public async Task CombineAsyncTests()
+        {
+            var left = await Ok<string, string>(Task.FromResult("abc")).CombineAsync();
+            var right = await Error<string, string>(Task.FromResult("abc")).CombineAsync();
+            Assert.Equal(left, right);
+        }
     }
 }
