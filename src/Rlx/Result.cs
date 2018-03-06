@@ -80,12 +80,6 @@ namespace Rlx
             return result;
         }
 
-        public Result<TValue, TError> Or(Func<Result<TValue, TError>> fn)
-        {
-            if (IsOk) return this;
-            return fn();
-        }
-
         public Result<TValue, TError> OrElse(Func<TError, Result<TValue, TError>> fn)
         {
             if (IsOk) return this;
