@@ -74,18 +74,6 @@ namespace Rlx
             return new ResultTask<TValue, TResult>(fn(_error));
         }
 
-        public Result<TResult, TError> And<TResult>(Result<TResult, TError> result)
-        {
-            if (IsOk) return result;
-            return new Result<TResult, TError>(_error);
-        }
-
-        public Result<TResult, TError> And<TResult>(Func<Result<TResult, TError>> fn)
-        {
-            if (IsOk) return fn();
-            return new Result<TResult, TError>(_error);
-        }
-
         public Result<TValue, TError> Or(Result<TValue, TError> result)
         {
             if (IsOk) return this;
@@ -108,6 +96,12 @@ namespace Rlx
         {
             if (IsOk) return new ResultTask<TValue, TError>(Task.FromResult(_value));
             return fn(_error);
+        }
+
+        public Result<TResult, TError> And<TResult>(Result<TResult, TError> result)
+        {
+            if (IsOk) return result;
+            return new Result<TResult, TError>(_error);
         }
 
         public Result<TResult, TError> AndThen<TResult>(Func<TValue, Result<TResult, TError>> fn)
