@@ -191,18 +191,18 @@ namespace Rlx.Tests
         }
 
         [Fact]
-        public void CombineTests()
+        public void UnwrapEitherTests()
         {
-            var left = Ok<string, string>("abc").Combine();
-            var right = Error<string, string>("abc").Combine();
+            var left = Ok<string, string>("abc").UnwrapEither();
+            var right = Error<string, string>("abc").UnwrapEither();
             Assert.Equal(left, right);
         }
 
         [Fact]
-        public async Task CombineAsyncTests()
+        public async Task UnwrapEitherAsyncTests()
         {
-            var left = await Ok<string, string>(Task.FromResult("abc")).CombineAsync();
-            var right = await Error<string, string>(Task.FromResult("abc")).CombineAsync();
+            var left = await Ok<string, string>(Task.FromResult("abc")).UnwrapEitherAsync();
+            var right = await Error<string, string>(Task.FromResult("abc")).UnwrapEitherAsync();
             Assert.Equal(left, right);
         }
     }
