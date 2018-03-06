@@ -123,6 +123,12 @@ namespace Rlx
             return Functions.Error<T, TError>(error());
         }
 
+        public ResultTask<T, TError> OkOrElse<TError>(Func<Task<TError>> error)
+        {
+            if (IsSome) return Functions.Ok<T, TError>(Task.FromResult(_value));
+            return Functions.Error<T, TError>(error());
+        }
+
         public Result<TValue, T> ErrorOr<TValue>(TValue value)
         {
             if (IsSome) return Functions.Error<TValue, T>(_value);
@@ -133,6 +139,12 @@ namespace Rlx
         {
             if (IsSome) return Functions.Error<TValue, T>(_value);
             return Functions.Ok<TValue, T>(value());
+        }
+
+        public ResultTask<TValue, T> ErrorOrElse<TValue>(Func<Task<TValue>> value)
+        {
+            if (IsSome) return Functions.Ok<TValue, T>(value());
+            return Functions.Error<TValue, T>(Task.FromResult(_value));
         }
 
         public Option<T> Or(Option<T> optionB)
