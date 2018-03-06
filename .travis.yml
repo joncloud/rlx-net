@@ -3,14 +3,6 @@ mono: none
 sudo: required
 dist: trusty
 install:
- - curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
- - sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
- - sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-trusty-prod trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
- - sudo apt-get update
- - sudo apt-get install dotnet-sdk-2.0.2
+ - sudo ./install.sh
 script:
- - dotnet restore
- - dotnet build --configuration=Release
- - find ./tests -mindepth 1 -maxdepth 1 -type d -name '*.Tests' | xargs -L1 dotnet test --configuration=Release
- - dotnet pack --configuration=Release --version-suffix="beta$TRAVIS_BUILD_ID"
- - ./push_if_set.sh
+ - ./build.sh
