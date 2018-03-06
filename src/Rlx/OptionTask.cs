@@ -89,6 +89,12 @@ namespace Rlx
             return new OptionTask<T>(task);
         }
 
+        public OptionTask<T> OrElse(Func<OptionTask<T>> fn)
+        {
+            var task = _task.Select(x => x.OrElse(fn).ToSync());
+            return new OptionTask<T>(task);
+        }
+
         public ResultTask<T, TError> OkOr<TError>(TError error)
         {
             var task = _task.Select(x => x.OkOr(error));
@@ -98,6 +104,12 @@ namespace Rlx
         public ResultTask<T, TError> OkOrElse<TError>(Func<TError> error)
         {
             var task = _task.Select(x => x.OkOrElse(error));
+            return new ResultTask<T, TError>(task);
+        }
+
+        public ResultTask<T, TError> OkOrElse<TError>(Func<Task<TError>> error)
+        {
+            var task = _task.Select(x => x.OkOrElse(error).ToSync());
             return new ResultTask<T, TError>(task);
         }
     }
