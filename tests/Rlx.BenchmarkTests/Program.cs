@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Running;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Rlx.BenchmarkTests
@@ -36,13 +37,23 @@ namespace Rlx.BenchmarkTests
 
             var names = GetBenchmarkTypes()
                 .Select(type => GetSimpleName(type.Name))
-                .OrderBy(x => x);
+                .OrderBy(x => x)
+                .ToList();
 
+            Console.WriteLine("Enter one of the following benchmarks as arguments");
             foreach (var name in names)
             {
                 Console.Write("\t* ");
                 Console.WriteLine(name);
             }
+
+            Console.WriteLine();
+            Console.WriteLine("Sample Usage");
+
+            string GetProgramName() =>
+                new FileInfo(new Uri(typeof(Program).Assembly.GetName().CodeBase).LocalPath).Name;
+
+            Console.WriteLine($"\tdotnet ./{GetProgramName()} {names[0]}");
 
             return 1;
         }
