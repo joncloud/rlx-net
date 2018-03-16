@@ -8,7 +8,7 @@ using static Rlx.Functions;
 
 namespace Rlx.Tests
 {
-    public class TryTests
+    public class TryActionTests
     {
         public static IEnumerable<object[]> AllFunctionArgumentCounts
         {
@@ -41,7 +41,7 @@ namespace Rlx.Tests
                 for (int i = 0; i < count; i++)
                 {
                     var call = Expression.Call(
-                        typeof(TryTests).GetMethod(nameof(AssertEqualInt), BindingFlags.Static | BindingFlags.NonPublic),
+                        typeof(TryActionTests).GetMethod(nameof(AssertEqualInt), BindingFlags.Static | BindingFlags.NonPublic),
                         Expression.Constant(i, typeof(int)),
                         parameters[i]
                     );
