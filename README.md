@@ -37,6 +37,20 @@ static void Main(string[] args) {
 }
 ```
 
+Need to generically handle exceptions? Wrap up logic with `TryFunctions`:
+```csharp
+using static Rlx.TryFunctions;
+
+public class MyClass
+{
+    public static void Unsafe() =>
+        throw new NotImplementedException();
+
+    public static Option<Exception> Safe() =>
+        Try(Unsafe);
+}
+```
+
 And also MVC helpers:
 ```csharp
 interface IDataService {
