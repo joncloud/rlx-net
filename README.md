@@ -28,6 +28,8 @@ Or update `*.csproj` to include a dependency on
 ## Usage
 Sample echo program:
 ```csharp
+using Rlx;
+
 static void Main(string[] args) {
   string message = args.ElementAtOrDefault(0)
     .ToOption()
@@ -39,15 +41,19 @@ static void Main(string[] args) {
 
 Need to generically handle exceptions? Wrap up logic with `TryFunctions`:
 ```csharp
+using System.IO;
 using static Rlx.TryFunctions;
 
 public class MyClass
 {
-    public static void Unsafe() =>
-        throw new NotImplementedException();
+  public static void Unsafe() =>
+    throw new NotImplementedException();
 
-    public static Option<Exception> Safe() =>
-        Try(Unsafe);
+  public static Result<Unit, Exception> Safe() =>
+    Try(Unsafe);
+
+  public static Result<Unit, IOException> IOSafe() =>
+    Try(Unsafe).Catch<IOException>();
 }
 ```
 

@@ -32,9 +32,9 @@ namespace Rlx.Tests
             var fnType = GetActionType(count);
             var fn = Expression.Lambda(fnType, body, parameters).Compile();
 
-            var option = InvokeActionTest(fn, count);
+            Result<Unit, Exception> result = InvokeActionTest(fn, count);
 
-            Assert.Equal(None<Exception>(), option);
+            Assert.Equal(None<Exception>(), result.Error());
 
             IEnumerable<MethodCallExpression> CreateAssertions()
             {
@@ -60,9 +60,9 @@ namespace Rlx.Tests
             var fnType = GetActionType(count);
             var fn = Expression.Lambda(fnType, body, parameters).Compile();
 
-            var option = InvokeActionTest(fn, count);
+            Result<Unit, Exception> result = InvokeActionTest(fn, count);
 
-            Assert.Equal(Some(exception), option);
+            Assert.Equal(Some(exception), result.Error());
         }
 
         static Type GetActionType(int count)
@@ -73,7 +73,7 @@ namespace Rlx.Tests
                 .MakeGenericType(typeArguments);
         }
 
-        static Option<Exception> InvokeActionTest(Delegate fn, int count)
+        static Attempt<Unit> InvokeActionTest(Delegate fn, int count)
         {
             var fnType = fn.GetType();
 
@@ -81,7 +81,7 @@ namespace Rlx.Tests
 
             var parameters = GetTryParameters(fn, count).ToArray();
             var invocationResult = tryMethod.Invoke(null, parameters);
-            return Assert.IsType<Option<Exception>>(invocationResult);
+            return Assert.IsType<Attempt<Unit>>(invocationResult);
         }
 
         static MethodInfo GetTryMethod(int count)
