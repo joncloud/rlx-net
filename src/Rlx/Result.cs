@@ -181,6 +181,20 @@ namespace Rlx
 
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
+
+        // TODO look to renaming this to Map/MapError for consistency
+        // the compiler squaks at the tests for an ambiguous overload.
+        public Result<Unit, TError> Consume(Action<TValue> fn) =>
+            Map(value => { fn(value); return Unit.Value; });
+
+        public ResultTask<Unit, TError> Consume(Func<TValue, Task> fn) =>
+            Map(value => fn(value).Select(() => Unit.Value));
+
+        public Result<TValue, Unit> ConsumeError(Action<TError> fn) =>
+            MapError(error => { fn(error); return Unit.Value; });
+
+        public ResultTask<TValue, Unit> ConsumeError(Func<TError, Task> fn) =>
+            MapError(error => fn(error).Select(() => Unit.Value));
     }
 
     public static class ResultExtensions

@@ -205,5 +205,157 @@ namespace Rlx.Tests
             var right = await Error<string, string>(Task.FromResult("abc")).UnwrapEitherAsync();
             Assert.Equal(left, right);
         }
+
+        [Fact]
+        public async Task ConsumeTests()
+        {
+            bool run = false;
+            var result = Ok<int, int>(1).Consume(i =>
+            {
+                Assert.Equal(1, i);
+                run = true;
+            });
+            Assert.Equal(Ok<Unit, int>(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Ok<int, int>(2).Consume(i =>
+            {
+                Assert.Equal(2, i);
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Ok<Unit, int>(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Ok<int, int>(Task.FromResult(3)).Consume(i =>
+            {
+                Assert.Equal(3, i);
+                run = true;
+            }).ToSync();
+            Assert.Equal(Ok<Unit, int>(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Ok<int, int>(Task.FromResult(4)).Consume(i =>
+            {
+                Assert.Equal(4, i);
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Ok<Unit, int>(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = Error<int, int>(1).Consume(i =>
+            {
+                run = true;
+            });
+            Assert.Equal(Error<Unit, int>(1), result);
+            Assert.False(run);
+
+            run = false;
+            result = await Error<int, int>(2).Consume(i =>
+            {
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Error<Unit, int>(2), result);
+            Assert.False(run);
+
+            run = false;
+            result = await Error<int, int>(Task.FromResult(3)).Consume(i =>
+            {
+                run = true;
+            }).ToSync();
+            Assert.Equal(Error<Unit, int>(3), result);
+            Assert.False(run);
+
+            run = false;
+            result = await Error<int, int>(Task.FromResult(4)).Consume(i =>
+            {
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Error<Unit, int>(4), result);
+            Assert.False(run);
+        }
+
+        [Fact]
+        public async Task ConsumeErrorTests()
+        {
+            bool run = false;
+            var result = Ok<int, int>(1).ConsumeError(i =>
+            {
+                run = true;
+            });
+            Assert.Equal(Ok<int, Unit>(1), result);
+            Assert.False(run);
+
+            run = false;
+            result = await Ok<int, int>(2).ConsumeError(i =>
+            {
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Ok<int, Unit>(2), result);
+            Assert.False(run);
+
+            run = false;
+            result = await Ok<int, int>(Task.FromResult(3)).ConsumeError(i =>
+            {
+                run = true;
+            }).ToSync();
+            Assert.Equal(Ok<int, Unit>(3), result);
+            Assert.False(run);
+
+            run = false;
+            result = await Ok<int, int>(Task.FromResult(4)).ConsumeError(i =>
+            {
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Ok<int, Unit>(4), result);
+            Assert.False(run);
+
+            run = false;
+            result = Error<int, int>(1).ConsumeError(i =>
+            {
+                Assert.Equal(1, i);
+                run = true;
+            });
+            Assert.Equal(Error<int, Unit>(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Error<int, int>(2).ConsumeError(i =>
+            {
+                Assert.Equal(2, i);
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Error<int, Unit>(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Error<int, int>(Task.FromResult(3)).ConsumeError(i =>
+            {
+                Assert.Equal(3, i);
+                run = true;
+            }).ToSync();
+            Assert.Equal(Error<int, Unit>(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Error<int, int>(Task.FromResult(4)).ConsumeError(i =>
+            {
+                Assert.Equal(4, i);
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Error<int, Unit>(Unit.Value), result);
+            Assert.True(run);
+        }
     }
 }

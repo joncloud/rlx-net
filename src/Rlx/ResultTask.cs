@@ -115,5 +115,17 @@ namespace Rlx
 
         public Task<TError> ExpectErrorAsync(string message)
             => _task.Select(x => x.ExpectError(message));
+
+        public ResultTask<Unit, TError> Consume(Action<TValue> fn) =>
+            Map(value => { fn(value); return Unit.Value; });
+
+        public ResultTask<Unit, TError> Consume(Func<TValue, Task> fn) =>
+            Map(value => fn(value).Select(() => Unit.Value));
+
+        public ResultTask<TValue, Unit> ConsumeError(Action<TError> fn) =>
+            MapError(value => { fn(value); return Unit.Value; });
+
+        public ResultTask<TValue, Unit> ConsumeError(Func<TError, Task> fn) =>
+            MapError(value => fn(value).Select(() => Unit.Value));
     }
 }
