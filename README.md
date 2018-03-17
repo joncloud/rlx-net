@@ -59,9 +59,13 @@ public class MyClass
 
 And also MVC helpers:
 ```csharp
+using Rlx;
+using Rlx.MvcCore;
+using static Rlx.Functions;
+
 interface IDataService {
   OptionTask<Data> LoadDataAsync(Guid id);
-  ResultTaks<Data, string> UpdateDataAsync(Data data);
+  ResultTask<Data, string> UpdateDataAsync(Data data);
 }
 
 class DataController : Controller {
@@ -70,10 +74,15 @@ class DataController : Controller {
     _dataService = dataService;
 
   public Task<IActionResult> Get(Guid id) =>
-    _dataService.LoadDataAsync(id).ToActionResult();
+    WithErrors().AndThen(_ => _dataService.LoadDataAsync(id))
+      .ToActionResult();
 
   public Task<IActionResult> Post([FromModel]Data data) =>
-    _dataService.UpdateDataAsync(data).ToActionResult(_ => 200, _ => 400, x => Some(x));
+    WithErrors().AndThen(_ => _dataService.UpdateDataAsync(data))
+      .ToActionResult(_ => 200, _ => 400, x => Some(x));
+
+  Result<Unit, string> WithErrors() =>
+    ModelState.ToResult().Map(x => "Bad Request");
 }
 ```
 
