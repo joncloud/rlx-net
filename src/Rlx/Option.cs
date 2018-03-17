@@ -66,7 +66,7 @@ namespace Rlx
         public OptionTask<TResult> Map<TResult>(Func<T, Task<TResult>> fn)
         {
             if (IsSome) return new OptionTask<TResult>(fn(_value));
-            return new OptionTask<TResult>();
+            return new OptionTask<TResult>(Task.FromResult(Option<TResult>.None));
         }
 
         public TResult MapOr<TResult>(TResult def, Func<T, TResult> fn)
@@ -197,5 +197,11 @@ namespace Rlx
                 return hash;
             }
         }
+
+        public Option<Unit> Consume(Action<T> fn) =>
+            Map(value => { fn(value); return Unit.Value; });
+
+        public OptionTask<Unit> Consume(Func<T, Task> fn) =>
+            Map(value => fn(value).Select(() => Unit.Value));
     }
 }

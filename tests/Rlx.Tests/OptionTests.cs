@@ -161,5 +161,81 @@ namespace Rlx.Tests
             Assert.Equal(1909, goodYear);
             Assert.Equal(0, badYear);
         }
+
+        [Fact]
+        public async Task ConsumeTests()
+        {
+            bool run = false;
+            var result = Some(1).Consume(i =>
+            {
+                Assert.Equal(1, i);
+                run = true;
+            });
+            Assert.Equal(Some(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Some(2).Consume(i =>
+            {
+                Assert.Equal(2, i);
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Some(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Some(Task.FromResult(3)).Consume(i =>
+            {
+                Assert.Equal(3, i);
+                run = true;
+            }).ToSync();
+            Assert.Equal(Some(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = await Some(Task.FromResult(4)).Consume(i =>
+            {
+                Assert.Equal(4, i);
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(Some(Unit.Value), result);
+            Assert.True(run);
+
+            run = false;
+            result = None<int>().Consume(i =>
+            {
+                run = true;
+            });
+            Assert.Equal(None<Unit>(), result);
+            Assert.False(run);
+
+            run = false;
+            result = await None<int>().Consume(i =>
+            {
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(None<Unit>(), result);
+            Assert.False(run);
+
+            run = false;
+            result = await NoneAsync<int>().Consume(i =>
+            {
+                run = true;
+            }).ToSync();
+            Assert.Equal(None<Unit>(), result);
+            Assert.False(run);
+
+            run = false;
+            result = await NoneAsync<int>().Consume(i =>
+            {
+                run = true;
+                return Task.CompletedTask;
+            }).ToSync();
+            Assert.Equal(None<Unit>(), result);
+            Assert.False(run);
+        }
     }
 }

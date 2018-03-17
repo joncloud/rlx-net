@@ -112,5 +112,11 @@ namespace Rlx
             var task = _task.Select(x => x.OkOrElse(error).ToSync());
             return new ResultTask<T, TError>(task);
         }
+
+        public OptionTask<Unit> Consume(Action<T> fn) =>
+            Map(value => { fn(value); return Unit.Value; });
+
+        public OptionTask<Unit> Consume(Func<T, Task> fn) =>
+            Map(value => fn(value).Select(() => Unit.Value));
     }
 }
