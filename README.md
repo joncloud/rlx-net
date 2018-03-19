@@ -82,7 +82,7 @@ class DataController : Controller {
       .ToActionResult(_ => 200, _ => 400, x => Some(x));
 
   Result<Unit, string> WithErrors() =>
-    ModelState.ToResult().Map(x => "Bad Request");
+    ModelState.ToResult().MapError(x => "Bad Request");
 }
 ```
 

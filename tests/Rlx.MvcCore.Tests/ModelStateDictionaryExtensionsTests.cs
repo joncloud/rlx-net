@@ -6,10 +6,24 @@ namespace Rlx.MvcCore.Tests
 {
     public class ModelStateDictionaryExtensionsTests
     {
+        static ModelStateDictionary Empty() => new ModelStateDictionary();
+        static ModelStateDictionary PositiveCount()
+        {
+            var modelState = new ModelStateDictionary();
+            modelState.SetModelValue("abc", "value", "value");
+            return modelState;
+        }
+        static ModelStateDictionary PositiveErrorCount()
+        {
+            var modelState = new ModelStateDictionary();
+            modelState.AddModelError("", "Some Error");
+            return modelState;
+        }
+
         [Fact]
         public void ToOption_ShouldReturnNoneGivenZeroErrorsCount()
         {
-            var modelState = new ModelStateDictionary();
+            var modelState = Empty();
             var actual = modelState.ToOption();
 
             var expected = None<ModelStateDictionary>();
@@ -19,8 +33,7 @@ namespace Rlx.MvcCore.Tests
         [Fact]
         public void ToOption_ShouldReturnSomeGivenPositiveErrorsCount()
         {
-            var modelState = new ModelStateDictionary();
-            modelState.AddModelError("", "Some Error");
+            var modelState = PositiveErrorCount();
             var actual = modelState.ToOption();
 
             var expected = Some(modelState);
@@ -28,9 +41,19 @@ namespace Rlx.MvcCore.Tests
         }
 
         [Fact]
+        public void ToOption_ShouldReturnNoneGivenPositiveCount()
+        {
+            var modelState = PositiveCount();
+            var actual = modelState.ToOption();
+
+            var expected = None<ModelStateDictionary>();
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void ToResult_ShouldReturnUnitGivenZeroErrorsCount()
         {
-            var modelState = new ModelStateDictionary();
+            var modelState = Empty();
             var actual = modelState.ToResult();
 
             var expected = Ok<Unit, ModelStateDictionary>(Unit.Value);
@@ -40,11 +63,20 @@ namespace Rlx.MvcCore.Tests
         [Fact]
         public void ToResult_ShouldReturnErrorGivenPositiveErrorsCount()
         {
-            var modelState = new ModelStateDictionary();
-            modelState.AddModelError("", "Some Error");
+            var modelState = PositiveErrorCount();
             var actual = modelState.ToResult();
 
             var expected = Error<Unit, ModelStateDictionary>(modelState);
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void ToResult_ShouldReturnNoneGivenPositiveCount()
+        {
+            var modelState = PositiveCount();
+            var actual = modelState.ToResult();
+
+            var expected = Ok<Unit, ModelStateDictionary>(Unit.Value);
             Assert.Equal(expected, actual);
         }
     }

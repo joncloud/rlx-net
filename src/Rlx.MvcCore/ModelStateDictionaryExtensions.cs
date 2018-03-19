@@ -6,7 +6,7 @@ namespace Rlx.MvcCore
     public static class ModelStateDictionaryExtensions
     {
         public static Option<ModelStateDictionary> ToOption(this ModelStateDictionary modelState) =>
-            modelState.Count > 0
+            modelState.ErrorCount > 0
                 ? Some(modelState)
                 : None<ModelStateDictionary>();
 
