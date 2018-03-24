@@ -42,7 +42,7 @@ static void Main(string[] args) {
 Need to generically handle exceptions? Wrap up logic with `TryFunctions`:
 ```csharp
 using System.IO;
-using static Rlx.TryFunctions;
+using static Rlx.Functions;
 
 public class MyClass
 {
