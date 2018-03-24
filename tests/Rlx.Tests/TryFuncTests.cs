@@ -97,7 +97,9 @@ namespace Rlx.Tests
 
         static MethodInfo GetTryMethod(Type fnType, int count)
         {
-            var methods = typeof(TryFunctions).GetMethods();
+            var methods = typeof(Functions)
+                .GetMethods()
+                .Where(method => method.Name == nameof(Functions.Try));
             foreach (var method in methods)
             {
                 var parameters = method.GetParameters();

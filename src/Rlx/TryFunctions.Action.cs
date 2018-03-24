@@ -2,7 +2,7 @@
 
 namespace Rlx
 {
-    public static partial class TryFunctions
+    public static partial class Functions
     {
         public static Attempt<Unit> Try(Action fn) =>
             new Attempt<Unit>(() => { fn(); return Unit.Value; });
