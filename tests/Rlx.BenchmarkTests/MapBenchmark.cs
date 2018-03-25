@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using static Rlx.Functions;
 
@@ -9,11 +9,19 @@ namespace Rlx.BenchmarkTests
     {
         [Benchmark]
         public int MapSome()
-            => Some(123).Map(x => x * x).Map(x => x + 1).UnwrapOrDefault();
+        {
+            return Some(123).Map(ToSquared).Map(ToPlusOne).UnwrapOrDefault();
+            int ToSquared(int x) => x * x;
+            int ToPlusOne(int x) => x + 1;
+        }
         
         [Benchmark]
         public int MapNone()
-            => None<int>().Map(x => x * x).Map(x => x + 1).UnwrapOrDefault();
+        {
+            return None<int>().Map(ToSquared).Map(ToPlusOne).UnwrapOrDefault();
+            int ToSquared(int x) => x * x;
+            int ToPlusOne(int x) => x + 1;
+        }
 
         [Benchmark]
         public int MapNullInt()
