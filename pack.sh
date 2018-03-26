@@ -2,6 +2,9 @@
 
 VALUE=$1
 
+# Clean the existing packages
+find ./src -name *.nupkg | xargs -L1 rm
+
 if [ -z $VERSION_SUFFIX ]; then
   VERSION=$(grep -Po ./src/Rlx/Rlx.csproj -e '(?<=<VersionPrefix>)[^<]+')
   echo "Using Version $VERSION"
