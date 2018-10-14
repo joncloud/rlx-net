@@ -3,7 +3,9 @@
 [![NuGet](https://img.shields.io/nuget/v/Rlx.svg)](https://www.nuget.org/packages/Rlx/)
 
 ## Description
-Rlx.NET provides core helper functions for abstracting null-references and errors.
+Rlx.NET provides core helper functions for abstracting null-references and errors. Rlx itself is short for `Rust Language Extensions`.
+
+It was heavily inspired by the [Rust] programming language [Option] and [Result] types. 
 
 ## Licensing
 Released under the MIT License.  See the [LICENSE][] file for further details.
@@ -90,3 +92,6 @@ For additional usage see [Tests][] and [MVC Tests][].
 
 [Tests]: tests/Rlx.Tests
 [MVC Tests]: tests/Rlx.MvcCore/Tests
+[Rust]: https://www.rust-lang.org/
+[Option]: https://doc.rust-lang.org/std/option/
+[Result]: https://doc.rust-lang.org/std/result/index.html
