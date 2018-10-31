@@ -23,7 +23,7 @@ Or update `*.csproj` to include a dependency on
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="Rlx" Version="0.1.0-*" />
+  <PackageReference Include="Rlx" Version="0.2.1-*" />
 </ItemGroup>
 ```
 
