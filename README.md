@@ -41,6 +41,23 @@ static void Main(string[] args) {
 }
 ```
 
+Use state overloads to prevent allocations:
+```csharp
+using Rlx;
+using static Rlx.Functions;
+
+static (string, int) CombineState(int state) {
+  return Some("abc")
+    .Map(state, (value, state) => (value, state))
+	.Unwrap();
+}
+
+static void Main(string[] args) {
+  var tuple = CombineState(123);
+  Console.WriteLine(tuple);
+}
+```
+
 Need to generically handle exceptions? Wrap up logic with `TryFunctions`:
 ```csharp
 using System.IO;

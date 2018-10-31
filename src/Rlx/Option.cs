@@ -57,6 +57,12 @@ namespace Rlx
             return Option<TResult>.None;
         }
 
+        public Option<TResult> Map<TResult, TState>(TState state, Func<T, TState, TResult> fn)
+        {
+            if (IsSome) return new Option<TResult>(fn(_value, state));
+            return Option<TResult>.None;
+        }
+
         public Option<TResult> Map<TResult>(Func<T, TResult> fn, IEqualityComparer<TResult> equalityComparer)
         {
             if (IsSome) return new Option<TResult>(fn(_value), equalityComparer);
@@ -69,9 +75,21 @@ namespace Rlx
             return new OptionTask<TResult>(Task.FromResult(Option<TResult>.None));
         }
 
+        public OptionTask<TResult> Map<TResult, TState>(TState state, Func<T, TState, Task<TResult>> fn)
+        {
+            if (IsSome) return new OptionTask<TResult>(fn(_value, state));
+            return new OptionTask<TResult>(Task.FromResult(Option<TResult>.None));
+        }
+
         public TResult MapOr<TResult>(TResult def, Func<T, TResult> fn)
         {
             if (IsSome) return fn(_value);
+            return def;
+        }
+
+        public TResult MapOr<TResult, TState>(TState state, TResult def, Func<T, TState, TResult> fn)
+        {
+            if (IsSome) return fn(_value, state);
             return def;
         }
 
@@ -81,10 +99,22 @@ namespace Rlx
             return def();
         }
 
+        public TResult MapOrElse<TResult, TState>(TState state, Func<TState, TResult> def, Func<T, TState, TResult> fn)
+        {
+            if (IsSome) return fn(_value, state);
+            return def(state);
+        }
+
         public Task<TResult> MapOrElse<TResult>(Func<Task<TResult>> def, Func<T, Task<TResult>> fn)
         {
             if (IsSome) return fn(_value);
             return def();
+        }
+
+        public Task<TResult> MapOrElse<TResult, TState>(TState state, Func<TState, Task<TResult>> def, Func<T, TState, Task<TResult>> fn)
+        {
+            if (IsSome) return fn(_value, state);
+            return def(state);
         }
 
         public Option<TResult> And<TResult>(Option<TResult> optionB)
@@ -105,9 +135,21 @@ namespace Rlx
             return Option<TResult>.None;
         }
 
+        public Option<TResult> AndThen<TResult, TState>(TState state, Func<T, TState, Option<TResult>> fn)
+        {
+            if (IsSome) return fn(_value, state);
+            return Option<TResult>.None;
+        }
+
         public OptionTask<TResult> AndThen<TResult>(Func<T, OptionTask<TResult>> fn)
         {
             if (IsSome) return fn(_value);
+            return OptionTask<TResult>.None;
+        }
+
+        public OptionTask<TResult> AndThen<TResult, TState>(TState state, Func<T, TState, OptionTask<TResult>> fn)
+        {
+            if (IsSome) return fn(_value, state);
             return OptionTask<TResult>.None;
         }
 
@@ -123,10 +165,22 @@ namespace Rlx
             return Functions.Error<T, TError>(error());
         }
 
+        public Result<T, TError> OkOrElse<TError, TState>(TState state, Func<TState, TError> error)
+        {
+            if (IsSome) return Functions.Ok<T, TError>(_value);
+            return Functions.Error<T, TError>(error(state));
+        }
+
         public ResultTask<T, TError> OkOrElse<TError>(Func<Task<TError>> error)
         {
             if (IsSome) return Functions.Ok<T, TError>(Task.FromResult(_value));
             return Functions.Error<T, TError>(error());
+        }
+
+        public ResultTask<T, TError> OkOrElse<TError, TState>(TState state, Func<TState, Task<TError>> error)
+        {
+            if (IsSome) return Functions.Ok<T, TError>(Task.FromResult(_value));
+            return Functions.Error<T, TError>(error(state));
         }
 
         public Result<TValue, T> ErrorOr<TValue>(TValue value)
@@ -141,9 +195,21 @@ namespace Rlx
             return Functions.Ok<TValue, T>(value());
         }
 
+        public Result<TValue, T> ErrorOrElse<TValue, TState>(TState state, Func<TState, TValue> value)
+        {
+            if (IsSome) return Functions.Error<TValue, T>(_value);
+            return Functions.Ok<TValue, T>(value(state));
+        }
+
         public ResultTask<TValue, T> ErrorOrElse<TValue>(Func<Task<TValue>> value)
         {
             if (IsSome) return Functions.Ok<TValue, T>(value());
+            return Functions.Error<TValue, T>(Task.FromResult(_value));
+        }
+
+        public ResultTask<TValue, T> ErrorOrElse<TValue, TState>(TState state, Func<TState, Task<TValue>> value)
+        {
+            if (IsSome) return Functions.Ok<TValue, T>(value(state));
             return Functions.Error<TValue, T>(Task.FromResult(_value));
         }
 
@@ -165,10 +231,22 @@ namespace Rlx
             return fn();
         }
 
+        public Option<T> OrElse<TState>(TState state, Func<TState, Option<T>> fn)
+        {
+            if (IsSome) return this;
+            return fn(state);
+        }
+
         public OptionTask<T> OrElse(Func<OptionTask<T>> fn)
         {
             if (IsSome) return new OptionTask<T>(Task.FromResult(_value));
             return fn();
+        }
+
+        public OptionTask<T> OrElse<TState>(TState state, Func<TState, OptionTask<T>> fn)
+        {
+            if (IsSome) return new OptionTask<T>(Task.FromResult(_value));
+            return fn(state);
         }
 
         public IEnumerator<T> GetEnumerator()
